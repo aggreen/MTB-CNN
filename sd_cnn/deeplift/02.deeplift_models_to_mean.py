@@ -19,13 +19,14 @@ print(len(df_geno_pheno))
 # Get lis of all output files
 output_files = glob.glob("output/*npz")
 
-# For each files
+# For each file (each drug)
 for file in output_files:
 
     # sparse load
     scores = sparse.load_npz(file)
     drug = file.split("/")[-1].split("_")[0]
 
+    # get only the resistant strains
     print(file, drug, scores.shape)
     subset_df_geno_pheno = df_geno_pheno.loc[np.logical_or(df_geno_pheno[drug]=="R", df_geno_pheno[drug]=="S"),:].reset_index(drop=True)
     resistant_strains = subset_df_geno_pheno.loc[df_geno_pheno[drug]=="R",:].index
@@ -37,7 +38,6 @@ for file in output_files:
 
     # take only isolates that are resistant
     scores_subset = scores[resistant_strains, :, :].todense()
-
     print("shape of the scores", scores_subset.shape)
 
     # Take max, median, and mean of saliency at each position

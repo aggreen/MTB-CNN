@@ -3,9 +3,9 @@ Converts our tensorflow/keras model to a deeplift model
 Authors: Anna G. Green
         Chang Ho Yoon
 
-Note: This requires tensorflow v1!! The CNN model must be saved in tf1
+Note: This requires tensorflow v1! The CNN model must be saved in tf1
 
-Based on Google Colab notebook DeepLIFT notebook genomics tutorial.ipynb
+Based on Google Colab notebook DeepLIFT notebook genomics_tutorial.ipynb
 '''
 from __future__ import print_function
 import sparse
@@ -16,22 +16,21 @@ import numpy as np
 import pandas as pd
 import h5py
 import json
+import deeplift
 import warnings
 warnings.filterwarnings("ignore")
 
+import tensorflow as tf
+import deeplift.conversion.kerasapi_conversion as kc
+
 from sklearn.model_selection import KFold, StratifiedKFold
 from sklearn.metrics import roc_auc_score, average_precision_score
-
-import tensorflow as tf
 from tensorflow.keras import backend as K
 from tensorflow.keras import layers
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras import models
 from tensorflow.keras.models import model_from_json
-
-import deeplift
 from deeplift.layers import NonlinearMxtsMode
-import deeplift.conversion.kerasapi_conversion as kc
 from collections import OrderedDict
 from deeplift.util import compile_func
 
@@ -213,7 +212,6 @@ with h5py.File(deeplift_trialweights) as keras_model_weights :
 
 
 ###### Step 5: sanity check make sure that our predictions match with keras and deeplift#####
-
 ###make sure predictions are the same as the original model
 
 model_to_test = method_to_model['rescale_conv_revealcancel_fc']
