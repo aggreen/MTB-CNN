@@ -1,2 +1,2 @@
 # Ignore files that startwith .
-#/\.*
+*/\._*
