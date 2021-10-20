@@ -62,7 +62,7 @@ def _get_shapes(df_geno):
 
 _, input_file = sys.argv
 kwargs = yaml.safe_load(open(input_file, "r"))
-h37rv_geno = pd.read_pickle("../focus_cnn/h37rv_geno.pkl")
+h37rv_geno = pd.read_pickle("../../input_data/h37rv_geno.pkl")
 
 columns_to_keep =  [x+"_one_hot" for x in kwargs['locus_list']]
 print(list(h37rv_geno.columns))

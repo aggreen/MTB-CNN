@@ -17,7 +17,7 @@ import os
 import yaml
 import sparse
 import tensorflow as tf
-import keras.backend as K
+import tensorflow.keras.backend as K
 import numpy as np
 import pandas as pd
 from sklearn.metrics import roc_auc_score, average_precision_score

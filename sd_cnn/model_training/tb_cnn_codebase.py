@@ -219,7 +219,6 @@ def make_geno_pheno_pkl(**kwargs):
     Required kwargs:
         phenotype_file: path to input phenotype file with columns "Isolate" and drug names
         genotype_input_directory: path to directory with input fasta files
-        genotype_df_file: path to save the one-hot encoded genotype file (intermediate step before phenotypes added)
         pkl_file: path to save the complete genotype/phenotype file
 	"""
 
@@ -244,9 +243,6 @@ def make_geno_pheno_pkl(**kwargs):
     for column in df_genos.columns:
         print("...", column)
         df_genos[column + "_one_hot"] = df_genos[column].apply(np.vectorize(get_one_hot))
-
-    geno_path = kwargs['genotype_df_file']
-    df_genos.to_pickle(geno_path)
 
     # combined dataframe of all genotypes and phenotypes
     df_geno_pheno_full = df_genos.join(df_phenos, how='inner')

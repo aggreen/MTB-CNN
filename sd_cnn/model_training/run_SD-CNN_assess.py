@@ -32,7 +32,7 @@ from tb_cnn_codebase import *
 from sklearn.metrics import roc_auc_score, average_precision_score
 num_drugs = 1
 
-ef run():
+def run():
 
     def get_conv_nn():
         """
@@ -157,8 +157,8 @@ ef run():
                 results.loc[idx] = ['CNN', drug, 0, 0, np.nan, np.nan, val_threshold, np.nan, np.nan]
                 continue
 
-            auc_y = np.reshape(y_train[non_missing_val, idx], (len(non_missing_val), 1)).astype(int)
-            auc_preds = np.reshape(y_train_pred[non_missing_val, idx], (len(non_missing_val), 1))
+            auc_y = np.reshape(y_train[non_missing_val], (len(non_missing_val), 1)).astype(int)
+            auc_preds = np.reshape(y_train_pred[non_missing_val], (len(non_missing_val), 1))
             num_sensitive = np.sum(auc_y==1)
             num_resistant = np.sum(auc_y==0)
 
@@ -171,14 +171,14 @@ ef run():
             val_auc = roc_auc_score(auc_y, auc_preds)
 
             # Binarize the predicted values
-            binary_prediction = np.array(y_train_pred[non_missing_val, idx] > val_threshold).astype(int)
+            binary_prediction = np.array(y_train_pred[non_missing_val] > val_threshold).astype(int)
 
             # Remember that in RS encoding to numeric, resistant==0
             # Specificity = #TN / # Condition Negative
-            val_spec = np.sum(np.logical_and(binary_prediction == 1, y_train[non_missing_val, idx] == 1)) / num_sensitive
+            val_spec = np.sum(np.logical_and(binary_prediction == 1, y_train[non_missing_val] == 1)) / num_sensitive
 
             # Sensitivity = #TP / # Condition Positive, Here defining "positive" as resistant
-            val_sens = np.sum(np.logical_and(binary_prediction == 0, y_train[non_missing_val, idx] == 0)) / num_resistant
+            val_sens = np.sum(np.logical_and(binary_prediction == 0, y_train[non_missing_val] == 0)) / num_resistant
 
             results.loc[idx] = ['SD-CNN', drug, num_sensitive, num_resistant, val_auc,  val_threshold, val_spec, val_sens]
 
@@ -247,6 +247,7 @@ ef run():
         print("X input already exists, loading X")
         X_sparse_train = sparse.load_npz(pkl_file_sparse_train)
         X_sparse_test = sparse.load_npz(pkl_file_sparse_test)
+        X_sparse = np.concatenate([X_sparse_test, X_sparse_train])
 
     else:
         print("creating X pickle")
@@ -268,7 +269,7 @@ ef run():
         #X_all = X_sparse.todense()
         #assert (X_all.shape[0] == len(df_geno_pheno))
 
-        df_geno_pheno = df_geno_pheno_subset.reset_index(drop=True)
+        df_geno_pheno = df_geno_pheno_subset.reset_index(drop=False)
         df_geno_pheno.to_csv(output_path + "_df_geno_pheno.csv")
 
         train_indices = df_geno_pheno.query("category=='set1_original_10202'").index
@@ -336,7 +337,7 @@ ef run():
 
         # Train and save the model and model weights
         history = model.fit_model(X_train, alpha_matrix)
-        history.to_csv(output_path + "history.csv")
+        history.to_csv(output_path + "_history.csv")
         model.save(saved_model_path)
         model.save_weights(saved_model_path + "weights.h5")
 
@@ -364,8 +365,13 @@ ef run():
     results.to_csv(f"{output_path}_test_set_drug_auc.csv")
 
     ##### Save predictions per strain
-    prediction_df = df_geno_pheno[["Isolate"]]
-    prediction_df.loc[:,DRUG] = y_pred
+    prediction_df = pd.read_csv(output_path + "_df_geno_pheno.csv")
+    prediction_df = prediction_df[["index"]]
+    print(prediction_df.shape)
+    y_prediction = model.predict(X_sparse.todense())
+    print(y_prediction.shape)
+    prediction_df.loc[:,DRUG] = y_prediction
+
     prediction_df.to_csv(f"{output_path}_strain_auc.csv")
 
 run()
