@@ -1,0 +1,84 @@
+# packages in environment at /n/data1/hms/dbmi/farhat/anna/anaconda3/deeplift:
+#
+# Name                    Version                   Build  Channel
+_libgcc_mutex             0.1                 conda_forge    conda-forge
+_openmp_mutex             4.5                       1_gnu    conda-forge
+_tflow_select             2.1.0                       gpu  
+absl-py                   0.13.0             pyhd8ed1ab_0    conda-forge
+astor                     0.8.1              pyh9f0ad1d_0    conda-forge
+biopython                 1.79             py37h5e8e339_0    conda-forge
+c-ares                    1.17.2               h7f98852_0    conda-forge
+ca-certificates           2021.5.30            ha878542_0    conda-forge
+cached-property           1.5.2                hd8ed1ab_1    conda-forge
+cached_property           1.5.2              pyha770c72_1    conda-forge
+cudatoolkit               10.0.130             hf841e97_8    conda-forge
+cudnn                     7.6.5.32             ha8d7eb6_1    conda-forge
+cupti                     10.0.130                      0  
+deeplift                  0.6.13.0           pyh3252c3a_0    bioconda
+gast                      0.2.2                      py_0    conda-forge
+google-pasta              0.2.0              pyh8c360ce_0    conda-forge
+grpcio                    1.38.1           py37hb27c1af_0    conda-forge
+h5py                      2.10.0          nompi_py37ha3df211_106    conda-forge
+hdf5                      1.10.6          nompi_h6a2412b_1114    conda-forge
+importlib-metadata        4.6.4            py37h89c1867_0    conda-forge
+joblib                    1.0.1              pyhd8ed1ab_0    conda-forge
+keras-applications        1.0.8                      py_1    conda-forge
+keras-preprocessing       1.1.2              pyhd8ed1ab_0    conda-forge
+krb5                      1.19.2               hcc1bbae_0    conda-forge
+ld_impl_linux-64          2.36.1               hea4e1c9_2    conda-forge
+libblas                   3.9.0           11_linux64_openblas    conda-forge
+libcblas                  3.9.0           11_linux64_openblas    conda-forge
+libcurl                   7.78.0               h2574ce0_0    conda-forge
+libedit                   3.1.20191231         he28a2e2_2    conda-forge
+libev                     4.33                 h516909a_1    conda-forge
+libffi                    3.3                  h58526e2_2    conda-forge
+libgcc-ng                 11.1.0               hc902ee8_8    conda-forge
+libgfortran-ng            11.1.0               h69a702a_8    conda-forge
+libgfortran5              11.1.0               h6c583b3_8    conda-forge
+libgomp                   11.1.0               hc902ee8_8    conda-forge
+liblapack                 3.9.0           11_linux64_openblas    conda-forge
+libllvm10                 10.0.1               he513fc3_3    conda-forge
+libnghttp2                1.43.0               h812cca2_0    conda-forge
+libopenblas               0.3.17          pthreads_h8fe5266_1    conda-forge
+libprotobuf               3.17.2               h780b84a_1    conda-forge
+libssh2                   1.9.0                ha56f1ee_6    conda-forge
+libstdcxx-ng              11.1.0               h56837e0_8    conda-forge
+llvmlite                  0.36.0           py37h9d7f4d0_0    conda-forge
+markdown                  3.3.4              pyhd8ed1ab_0    conda-forge
+ncurses                   6.2                  h58526e2_4    conda-forge
+numba                     0.53.1           py37hb11d6e1_1    conda-forge
+numpy                     1.21.2           py37h31617e3_0    conda-forge
+openssl                   1.1.1k               h7f98852_1    conda-forge
+opt_einsum                3.3.0              pyhd8ed1ab_1    conda-forge
+pandas                    1.3.2            py37he8f5f7f_0    conda-forge
+pip                       21.2.4             pyhd8ed1ab_0    conda-forge
+protobuf                  3.17.2           py37hcd2ae1e_0    conda-forge
+python                    3.7.10          hffdb5ce_100_cpython    conda-forge
+python-dateutil           2.8.2              pyhd8ed1ab_0    conda-forge
+python_abi                3.7                     2_cp37m    conda-forge
+pytz                      2021.1             pyhd8ed1ab_0    conda-forge
+pyyaml                    5.4.1            py37h5e8e339_0    conda-forge
+readline                  8.1                  h46c0cb4_0    conda-forge
+scikit-learn              0.24.2           py37hf9e9bfc_1    conda-forge
+scipy                     1.7.1            py37hf2a6cf1_0    conda-forge
+setuptools                57.4.0           py37h89c1867_0    conda-forge
+six                       1.16.0             pyh6c4a22f_0    conda-forge
+sparse                    0.12.0             pyhd8ed1ab_0    conda-forge
+sqlite                    3.36.0               h9cd32fc_0    conda-forge
+tensorboard               1.15.0                   py37_0    conda-forge
+tensorflow                1.15.0          gpu_py37h0f0df58_0  
+tensorflow-base           1.15.0          gpu_py37h9dcbed7_0  
+tensorflow-estimator      1.15.1             pyh2649769_0  
+tensorflow-gpu            1.15.0               h0d30ee6_0  
+termcolor                 1.1.0                      py_2    conda-forge
+threadpoolctl             2.2.0              pyh8a188c0_0    conda-forge
+tk                        8.6.10               h21135ba_1    conda-forge
+typing_extensions         3.10.0.0           pyha770c72_0    conda-forge
+tzdata                    2021a                he74cb21_1    conda-forge
+werkzeug                  0.16.1                     py_0    conda-forge
+wheel                     0.37.0             pyhd8ed1ab_1    conda-forge
+wrapt                     1.12.1           py37h5e8e339_3    conda-forge
+xz                        5.2.5                h516909a_1    conda-forge
+yaml                      0.2.5                h516909a_0    conda-forge
+zipp                      3.5.0              pyhd8ed1ab_0    conda-forge
+zlib                      1.2.11            h516909a_1010    conda-forge
