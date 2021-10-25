@@ -1,0 +1,22 @@
+## Parameter file for run_cnn.py
+
+filter_size: 12
+N_epochs: 250
+output_path: results_20210107_conv_conv_pool_filter12
+
+# File containing phenotypes of each strain, tab-separated values
+
+phenotype_file: ../../input_data/master_table_resistance.csv
+
+genotype_input_directory: ../../input_data/fasta_files
+
+
+pkl_file: multitask_geno_pheno_train_test.pkl
+
+pkl_file_sparse_train:  multitask_X_sparse_train.npy.npz
+
+pkl_file_sparse_test:  multitask_X_sparse_test.npy.npz
+
+alpha_file:  alpha_multitask_train_test.csv
+
+saved_model_path: saved_models/multitask_model_conv_conv_pool_filter12
