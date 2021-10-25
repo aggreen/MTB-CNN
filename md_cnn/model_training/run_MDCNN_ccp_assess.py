@@ -1,45 +1,45 @@
 #!/usr/bin/env python
 # coding: utf-8
 """
-Code for training SD_CNN on all training data
-- assesses accuracy on training set
-- then assessing accuracy on held-out test set
-- predicts phenotype for all input isolates
-- saves model and weights for use in deeplift
+Runs multitask model with conv-conv-pool architecture:
+- training on entire train set
+- accuracy evaluation on held-out test set
+This is the architecture used for the final MD-CNN model
 
 Authors:
 	Michael Chen (original version)
 	Anna G. Green
-	Chang-ho Yoon
+	Chang-Ho Yoon
 """
 
 import sys
 import glob
 import os
-#import ruamel.yaml as yaml
 import yaml
 import sparse
+
 import tensorflow as tf
-import tensorflow.keras.backend as K
+import keras.backend as K
 import numpy as np
 import pandas as pd
 
+from sklearn.metrics import roc_auc_score, average_precision_score
 from sklearn.model_selection import KFold, StratifiedKFold
 from tensorflow.keras import layers
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras import models
 from tb_cnn_codebase import *
-from sklearn.metrics import roc_auc_score, average_precision_score
-num_drugs = 1
+
+drugs = ['RIFAMPICIN', 'ISONIAZID', 'PYRAZINAMIDE',
+             'ETHAMBUTOL', 'STREPTOMYCIN', 'LEVOFLOXACIN',
+             'CAPREOMYCIN', 'AMIKACIN', 'MOXIFLOXACIN',
+             'OFLOXACIN', 'KANAMYCIN', 'ETHIONAMIDE',
+             'CIPROFLOXACIN']
+num_drugs = len(drugs)
 
 def run():
 
     def get_conv_nn():
-        """
-        Define convolutional neural network architecture
-
-        NB filter_size is a global variable (int) given by the kwargs
-        """
 
 		#TODO: replace X.shape with passed argument
         model = models.Sequential()
@@ -48,21 +48,20 @@ def run():
             64, (5, filter_size),
             data_format='channels_last',
             activation='relu',
-            input_shape = X.shape[1::]
+            input_shape = X.shape[1:]
         ))
-        model.add(layers.Conv2D(64, (1,12), activation='relu', name='conv1d'))
-        model.add(layers.MaxPooling2D((1,3), name='max_pooling1d'))
-        model.add(layers.Conv2D(32, (1,3), activation='relu', name='conv1d_1'))
-        model.add(layers.Conv2D(32, (1,3), activation='relu', name='conv1d_2'))
-        model.add(layers.MaxPooling2D((1,3), name='max_pooling1d_1'))
-        model.add(layers.Flatten(name='flatten'))
+        model.add(layers.Lambda(lambda x: K.squeeze(x, 1)))
+        model.add(layers.Conv1D(64, 12, activation='relu'))
+        model.add(layers.MaxPooling1D(3))
+        model.add(layers.Conv1D(32, 3, activation='relu'))
+        model.add(layers.Conv1D(32, 3, activation='relu'))
+        model.add(layers.MaxPooling1D(3))
+        model.add(layers.Flatten())
         model.add(layers.Dense(256, activation='relu', name='d1'))
         model.add(layers.Dense(256, activation='relu', name='d2'))
-        model.add(layers.Dense(1, activation='sigmoid', name='d4'))
+        model.add(layers.Dense(13, activation='sigmoid', name='d4'))
 
-        print(model.summary())
-
-        opt = Adam(lr=np.exp(-1.0 * 9))
+        opt = Adam(learning_rate=np.exp(-1.0 * 9))
 
         model.compile(optimizer=opt,
                       loss=masked_multi_weighted_bce,
@@ -114,23 +113,13 @@ def run():
                 return pd.DataFrame.from_dict(data=history.history)
 
         def predict(self, X_val):
-            """
-            Returns
-            -------
-            predicted labels for given X
-            """
             return np.squeeze(self.model.predict(X_val))
 
         def save(self, saved_model_path):
-            """ saves the model """
             return self.model.save(saved_model_path)
 
-        def save_weights(self, saved_weights_path):
-            """ saves the model weights """
-            return self.model.save_weights(saved_weights_path)
-
     ## Compute the performance for the training set
-    def compute_drug_auc_table(y_train, y_train_pred, threshold):
+    def compute_drug_auc_table(y_train, y_train_pred, drug_to_threshold):
         """
         Computes the AUC, sensitivity, specificity, for given threshold
 
@@ -140,8 +129,8 @@ def run():
             actual values for y
         y_train_pred: np.array
             predicted values for y
-        threshold: float
-            The prediction threshold for the current drug
+        drug_to_threshold: dict of str->float
+            The prediction threshold for each drug
         Returns
         -------
         pd.DataFrame with columns: 'Algorithm', 'Drug', "num_sensitive", "num_resistant",'AUC', "threshold", "spec", "sens"
@@ -149,27 +138,27 @@ def run():
         column_names = ['Algorithm', 'Drug', "num_sensitive", "num_resistant",'AUC', "threshold", "spec", "sens"]
         results = pd.DataFrame(columns=column_names)
 
-        # Iterate through drugs - in this case only one
-        for idx, drug in enumerate([DRUG]):
+        for idx, drug in enumerate(drugs):
             print("evaluating for the test set,", drug)
 
-            # Use the threshold from the TRAINING data, not the test data
-            val_threshold = float(threshold)
+            # Calculate the threshold from the TRAINING data, not the test data
+            val_threshold = float(drug_to_threshold[drug])
 
-            # If we don't have any phenotypes, we can't assess
             non_missing_val = np.where(y_train[:, idx] != -1)[0]
+            # If we don't have any phenotypes, we can't assess
             if len(non_missing_val)==0:
-                results.loc[idx] = ['SD-CNN', drug, 0, 0, np.nan, np.nan, val_threshold, np.nan, np.nan]
+                results.loc[idx] = ['MD-CNN', drug, 0, 0, np.nan, val_threshold, np.nan, np.nan]
                 continue
 
-            auc_y = np.reshape(y_train[non_missing_val], (len(non_missing_val), 1)).astype(int)
-            auc_preds = np.reshape(y_train_pred[non_missing_val], (len(non_missing_val), 1))
+            auc_y = np.reshape(y_train[non_missing_val, idx], (len(non_missing_val), 1)).astype(int)
+            auc_preds = np.reshape(y_train_pred[non_missing_val, idx], (len(non_missing_val), 1))
+
             num_sensitive = np.sum(auc_y==1)
             num_resistant = np.sum(auc_y==0)
 
             # If we don't have at least 1 R and 1 S isolate we can't assess model
             if num_sensitive==0 or num_resistant==0:
-                results.loc[idx] = ['SD-CNN', drug, num_sensitive, num_resistant, np.nan, np.nan, val_threshold, np.nan, np.nan]
+                results.loc[idx] = ['MD-CNN', drug, num_sensitive, num_resistant, np.nan, val_threshold, np.nan, np.nan]
                 continue
 
             # Compute the AUC
@@ -185,30 +174,33 @@ def run():
             # Sensitivity = #TP / # Condition Positive, Here defining "positive" as resistant
             val_sens = np.sum(np.logical_and(binary_prediction == 0, y_train[non_missing_val] == 0)) / num_resistant
 
-            results.loc[idx] = ['SD-CNN', drug, num_sensitive, num_resistant, val_auc,  val_threshold, val_spec, val_sens]
+            results.loc[idx] = ['MD-CNN', drug, num_sensitive, num_resistant, val_auc,  val_threshold, val_spec, val_sens]
 
         return results
 
+
+    ### Prepare the test data - held out strains
     def compute_y_pred(df_geno_pheno_test):
         """
         Computes predicted phenotypes
         """
 
+        # Get the numeric encoding for current subset of isolates
         df_geno_pheno_test = df_geno_pheno_test.fillna('-1')
-        y_all_test, y_all_test_array = rs_encoding_to_numeric(df_geno_pheno_test, DRUG)
-        y_all_test_array = y_all_test_array.reshape(-1,1)
+        y_all_test, y_all_test_array = rs_encoding_to_numeric(df_geno_pheno_test, drugs)
 
-        ind_with_phenotype_test = y_all_test.index[y_all_test != -1] + int(df_geno_pheno_test.index[0])
-        ind_with_phenotype_test_0index = y_all_test.index[y_all_test != -1]
+        # Make sure that we have phenotype for at least one drug
+        ind_with_phenotype_test = y_all_test.index[y_all_test.sum(axis=1) != -num_drugs] + int(df_geno_pheno_test.index[0])
+        ind_with_phenotype_test_0index = y_all_test.index[y_all_test.sum(axis=1) != -num_drugs]
 
+        # Get x indices for which we have phenotype
         X = X_sparse_test[ind_with_phenotype_test]
         print("the shape of X_test is {}".format(X.shape))
 
-        # y_train_val = y_all_train_val[ind_with_phenotype_train_val]
         y_test = y_all_test_array[ind_with_phenotype_test_0index]
         del y_all_test_array
         del y_all_test
-        # print("the shape of y_train_val is {}".format(y_train_val.shape))
+
         print("the shape of y_test is {}".format(y_test.shape))
 
         print('Predicting for test data...')
@@ -228,14 +220,6 @@ def run():
     filter_size = kwargs["filter_size"]
     pkl_file_sparse_train = kwargs['pkl_file_sparse_train']
     pkl_file_sparse_test = kwargs['pkl_file_sparse_test']
-    DRUG = kwargs["drug"]
-    locus_list = kwargs["locus_list"]
-
-    # Ensure that output directory exists
-    output_dir = "/".join(output_path.split("/")[0:-1])
-    if not os.path.isdir(output_dir):
-        print(f"WARNING: output directory {output_dir} does not exist, creating")
-        os.system(f"mkdir {output_dir}")
 
     # Determine whether pickle already exists
     if os.path.isfile(kwargs["pkl_file"]):
@@ -245,76 +229,35 @@ def run():
         make_geno_pheno_pkl(**kwargs)
 
     df_geno_pheno = pd.read_pickle(kwargs["pkl_file"])
-    y_all_train, y_array = rs_encoding_to_numeric(df_geno_pheno.query("category=='set1_original_10202'"), DRUG)
+    y_all_train, y_array = rs_encoding_to_numeric(df_geno_pheno.query("category=='set1_original_10202'"), drugs)
 
 
     if os.path.isfile(pkl_file_sparse_train) and os.path.isfile(pkl_file_sparse_test):
         print("X input already exists, loading X")
         X_sparse_train = sparse.load_npz(pkl_file_sparse_train)
         X_sparse_test = sparse.load_npz(pkl_file_sparse_test)
-        X_sparse = np.concatenate([X_sparse_test, X_sparse_train])
 
     else:
         print("creating X pickle")
-        columns_to_keep = ["index", "category", DRUG] + [x+"_one_hot" for x in locus_list]
-        print(list(df_geno_pheno.columns))
-        df_geno_pheno_subset = df_geno_pheno[columns_to_keep]
-        del df_geno_pheno
-        print(df_geno_pheno_subset)
-        df_geno_pheno_subset = df_geno_pheno_subset.loc[
-            np.logical_or(df_geno_pheno_subset[DRUG]=='R',df_geno_pheno_subset[DRUG]=="S")
-        ]
-        print(df_geno_pheno_subset.shape)
-
-        X_all = create_X(df_geno_pheno_subset)
-
+        X_all = create_X(df_geno_pheno)
         X_sparse = sparse.COO(X_all)
+        del X_all
         sparse.save_npz("X_all.pkl", X_sparse, compressed=False)
+
+        print("splitting X into train and test")
         X_sparse = sparse.load_npz("X_all.pkl.npz")
-        #X_all = X_sparse.todense()
-        #assert (X_all.shape[0] == len(df_geno_pheno))
+        X_sparse_test, X_sparse_train = split_into_traintest(X_sparse, df_geno_pheno, "set1_original_10202")
 
-        df_geno_pheno = df_geno_pheno_subset.reset_index(drop=False)
-        df_geno_pheno.to_csv(output_path + "_df_geno_pheno.csv")
-
-        train_indices = df_geno_pheno.query("category=='set1_original_10202'").index
-        test_indices = df_geno_pheno.query("category!='set1_original_10202'").index
-
-        print("splitting X pkl")
-        X_sparse_train = X_sparse[train_indices, :]
-        X_sparse_test = X_sparse[test_indices, :]
-        print("training set shape", X_sparse_train.shape)
-        print("test set shape", X_sparse_test.shape)
-        del X_sparse
-
-        #X_sparse_train = sparse.COO(X_train)
-        sparse.save_npz(pkl_file_sparse_train, X_sparse_train, compressed=False)
-
-        #X_sparse_test = sparse.COO(X_test)
-        sparse.save_npz(pkl_file_sparse_test, X_sparse_test, compressed=False)
-
-    # Read in isolates
-    df_geno_pheno = pd.read_csv(output_path + "_df_geno_pheno.csv", index_col=0)
-    y_all_train, y_array = rs_encoding_to_numeric(df_geno_pheno.query("category=='set1_original_10202'"), DRUG)
-    y_array = y_array.reshape(-1,1)
-    num_drugs = 1
-
-    # obtain phenotype data for CNN
-    y_all_train = y_all_train.values.astype(np.int)
-
-    # obtain isolates with at least 1 resistance status to length of drugs
-    ind_with_phenotype = np.arange(0, len(y_all_train))
-    print(X_sparse_train.shape, y_array.shape)
+    # ### obtain isolates with at least 1 resistance status to length of drugs
+    ind_with_phenotype = np.where(y_all_train.sum(axis=1) != -num_drugs)
 
     X = X_sparse_train[ind_with_phenotype]
     print("the shape of X is {}".format(X.shape))
 
-    y = y_all_train[ind_with_phenotype].reshape(-1,1)
+    y = y_array[ind_with_phenotype]
     print("the shape of y is {}".format(y.shape))
 
-    alpha_matrix_path = kwargs["alpha_file"]
-
-    ##### Train the model on the entire training set - no CV splits
+    ### Train the model on the entire training set - no CV splits
     saved_model_path = kwargs['saved_model_path']
 
     if os.path.isdir(saved_model_path):
@@ -326,57 +269,40 @@ def run():
         print("Did not find model", saved_model_path)
         model = myCNN()
         X_train = X.todense()
-
-        # alpha matrix
-        if os.path.isfile(alpha_matrix_path):
-            print("alpha matrix already exists, loading alpha matrix")
-            alpha_matrix = np.loadtxt(alpha_matrix_path, delimiter=',')
-        else:
-            print("creating alpha matrix")
-            if "weight_of_sensitive_class" in kwargs:
-                print('creating alpha matrix with weight', kwargs["weight_of_sensitive_class"])
-                alpha_matrix = alpha_mat(y_array, df_geno_pheno, kwargs["weight_of_sensitive_class"])
-            else:
-                alpha_matrix = alpha_mat(y_array, df_geno_pheno)
-            np.savetxt(alpha_matrix_path, alpha_matrix, delimiter=',')
-
-        # Train and save the model and model weights
+        print('fitting..')
+        alpha_matrix = load_alpha_matrix(kwargs["alpha_file"], y, df_geno_pheno, **kwargs)
         history = model.fit_model(X_train, alpha_matrix)
-        history.to_csv(output_path + "_history.csv")
+        history.to_csv(output_path + "history.csv")
         model.save(saved_model_path)
-        model.save_weights(saved_model_path + "weights.h5")
-
+    #
     # ## Get the thresholds for evaluation
     print("Predicting for training data...")
     y_train_pred = model.predict(X.todense())
     y_train = y_array[ind_with_phenotype]
 
-    # Get the optimal prediction threshold
-    val__ = get_threshold_val(y_train.reshape(-1,1), y_train_pred.reshape(-1,1))
-    threshold_data = pd.DataFrame(val__, index=[0])
+    # Select the prediction threshold for each drug based on TRAINING SET DATA
+    _data = []
+    for idx, drug in enumerate(drugs):
+        # Calculate the threshold from the TRAINING data, not the test data
+        print("getting threshold for", drug)
+        val__ = get_threshold_val(y_train[:, idx], y_train_pred[:, idx])
+        val__["drug"] = drug
+        _data.append(val__)
+    threshold_data = pd.DataFrame(_data)
     threshold_data.to_csv(kwargs['threshold_file'])
-    threshold = threshold_data.threshold[0]
 
-    ## Compute and save AUC table for test set
-    results = compute_drug_auc_table(y_train, y_train_pred, threshold)
+    drug_to_threshold = {x:y for x,y in zip(threshold_data.drug, threshold_data.threshold)}
+
+    ## Compute AUC for training set data
+    results = compute_drug_auc_table(y_train, y_train_pred, drug_to_threshold)
     results.to_csv(f"{output_path}_training_set_drug_auc.csv")
 
-    # Compute and save AUC table for training set
+    # Compute AUC for test set data
     df_geno_pheno = df_geno_pheno.query("category != 'set1_original_10202'")
     df_geno_pheno = df_geno_pheno.reset_index(drop=True)
 
     y_pred, y_test = compute_y_pred(df_geno_pheno)
-    results = compute_drug_auc_table(y_test, y_pred, threshold)
+    results = compute_drug_auc_table(y_test, y_pred, drug_to_threshold)
     results.to_csv(f"{output_path}_test_set_drug_auc.csv")
-
-    ##### Save predictions per strain
-    prediction_df = pd.read_csv(output_path + "_df_geno_pheno.csv")
-    prediction_df = prediction_df[["index"]]
-    print(prediction_df.shape)
-    y_prediction = model.predict(X_sparse.todense())
-    print(y_prediction.shape)
-    prediction_df.loc[:,DRUG] = y_prediction
-
-    prediction_df.to_csv(f"{output_path}_strain_auc.csv")
 
 run()
