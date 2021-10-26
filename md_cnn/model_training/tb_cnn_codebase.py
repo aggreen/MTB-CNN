@@ -103,28 +103,32 @@ def make_genotype_df(genotype_input_directory):
     dfs_list = []
 
     locus_order = [
-        "acpM-kasA_20201206",
-        "gid_20201206",
-        "rpsA_20201206",
-        "clpC_20201213",
-        "embCAB_20201206",
-        "aftB-ubiA_20201206",
-        "rrs-rrl_20201206",
-        "ethAR_20201206",
-        "oxyR-ahpC_20201206",
-        "tlyA_20201206",
-        "KatG_20201206",
-        "rpsL_20201206",
-        "rpoBC_20201206",
-        "FabG1-inhA_20201206",
-        "eis_20201206",
-        "gyrBA_20201206",
-        "panD_20201213",
-        "pncA_20201206"
+        "acpM-kasA",
+        "gid",
+        "rpsA",
+        "clpC",
+        "embCAB",
+        "aftB-ubiA",
+        "rrs-rrl",
+        "ethAR",
+        "oxyR-ahpC",
+        "tlyA",
+        "KatG",
+        "rpsL",
+        "rpoBC",
+        "FabG1-inhA",
+        "eis",
+        "gyrBA",
+        "panD",
+        "pncA"
     ]
 
     for l in locus_order:
-        df_file = f"{genotype_input_directory}/{l}.fasta"
+        df_files = glob.glob(f"{genotype_input_directory}/{l}*.fasta")
+        if len(df_files)==1:
+            df_file = df_files[0]
+        else:
+            raise ValueError
         print("reading fasta file", df_file)
         _df = sequence_dictionary(df_file)
         print("found this many seqs", len(_df))

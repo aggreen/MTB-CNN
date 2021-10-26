@@ -1,0 +1,33 @@
+
+     active environment : /n/data1/hms/dbmi/farhat/anna/anaconda3/deeplift
+    active env location : /n/data1/hms/dbmi/farhat/anna/anaconda3/deeplift
+            shell level : 2
+       user config file : /home/ag300/.condarc
+ populated config files : /home/ag300/.condarc
+          conda version : 4.5.12
+    conda-build version : 3.17.6
+         python version : 3.7.1.final.0
+       base environment : /n/data1/hms/dbmi/farhat/anna/anaconda3  (writable)
+           channel URLs : https://conda.anaconda.org/conda-forge/linux-64
+                          https://conda.anaconda.org/conda-forge/noarch
+                          https://conda.anaconda.org/bioconda/linux-64
+                          https://conda.anaconda.org/bioconda/noarch
+                          https://repo.anaconda.com/pkgs/main/linux-64
+                          https://repo.anaconda.com/pkgs/main/noarch
+                          https://repo.anaconda.com/pkgs/free/linux-64
+                          https://repo.anaconda.com/pkgs/free/noarch
+                          https://repo.anaconda.com/pkgs/r/linux-64
+                          https://repo.anaconda.com/pkgs/r/noarch
+                          https://repo.anaconda.com/pkgs/pro/linux-64
+                          https://repo.anaconda.com/pkgs/pro/noarch
+          package cache : /n/data1/hms/dbmi/farhat/anna/anaconda3/pkgs
+                          /home/ag300/.conda/pkgs
+       envs directories : /home/ag300/anaconda3/envs
+                          /n/data1/hms/dbmi/farhat/anna/anaconda3/envs
+                          /home/ag300/.conda/envs
+               platform : linux-64
+             user-agent : conda/4.5.12 requests/2.21.0 CPython/3.7.1 Linux/3.10.0-1062.el7.x86_64 centos/7 glibc/2.17
+                UID:GID : 101739:2101739
+             netrc file : None
+           offline mode : False
+
