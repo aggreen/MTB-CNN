@@ -3,6 +3,23 @@ CNN models for antibiotic resistance prediction in M. tuberculosis genomes. From
 
 preprint: https://www.biorxiv.org/content/10.1101/2021.12.06.471431v1
 
+## Installation
+
+Software can be installed by downloading the codebase. Required dependencies are listed on a per-subdirectory basis in environment_reqs.txt. Installation of the codebase and all required dependencies takes minutes.
+
+## System requirements
+
+The MD-CNN, SD-CNN, and WDNN were trained on an NVIDIA GeForce GTX Titan X GPU. Model training takes 6-12 hours. 
+
+The LogReg + L2 training was performed on a CPU with 50GB RAM.
+
+DeepLIFT calculations were performed on an NVIDIA GeForce GTX Titan X GPU.
+
+Downstream data analysis was performed on a MacBook Pro laptop running macOS Catalina v. 10.15.7
+
+## Instructions for running
+
+
 
 ## List of subdirectories
 ```
@@ -20,4 +37,3 @@ wdnn: code for running previous state of art wide and deep neural network (WDNN)
 
 ```
 
-All subdirectories contain an environment_reqs.txt file with the list of packages in the conda environment (this may vary between subdirectories)
