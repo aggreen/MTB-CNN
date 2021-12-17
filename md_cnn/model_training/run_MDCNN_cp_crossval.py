@@ -6,7 +6,7 @@ Note that this architecture was NOT SELECTED for the final model
 Authors:
 	Michael Chen (original version)
 	Anna G. Green
-	Chang-Ho Yoon
+	Chang Ho Yoon
 """
 import sys
 import glob
