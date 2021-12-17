@@ -6,7 +6,7 @@ ie sequences made in silico
 Authors:
 	Michael Chen (original MD-CNN)
 	Anna G. Green
-	Chang-ho Yoon
+	Chang Ho Yoon
 """
 
 import sys
