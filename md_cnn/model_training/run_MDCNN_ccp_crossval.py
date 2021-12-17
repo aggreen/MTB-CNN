@@ -7,7 +7,7 @@ This is the architecture used for the final MD-CNN model
 Authors:
 	Michael Chen (original version)
 	Anna G. Green
-	Chang-Ho Yoon
+	Chang Ho Yoon
 """
 
 import sys
