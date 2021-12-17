@@ -1,3 +1,9 @@
+"""
+Code for creating the input X data point for the reference genome, MTB_H37Rv
+
+Authors:
+Anna G. Green
+"""
 
 import sys
 import glob
