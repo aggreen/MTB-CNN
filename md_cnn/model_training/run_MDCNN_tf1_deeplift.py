@@ -7,7 +7,7 @@ for Deeplift compatibility
 Authors:
 	Michael Chen (original version)
 	Anna G. Green
-	Chang-Ho Yoon
+	Chang Ho Yoon
 """
 import sys
 import glob
