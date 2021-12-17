@@ -1,7 +1,7 @@
 '''
 Converts our tensorflow/keras model to a deeplift model
 Authors: Anna G. Green
-        Chang-Ho Yoon
+        Chang Ho Yoon
 
 Note: This requires tensorflow v1!! The CNN model must be saved in tf1
 
@@ -60,7 +60,7 @@ def _get_shapes(df_geno):
 
 		return shapes
 
-h37rv_geno = pd.read_pickle("../../input_data/h37rv_geno.pkl")
+h37rv_geno = pd.read_pickle("../model_training/h37rv_geno.pkl")
 
 shapes = _get_shapes(h37rv_geno)
 n_genes = len(shapes)
