@@ -1,9 +1,9 @@
 """
-Code for running CNN on MTB data to predict ABR phenotypes
+Functions for running CNN on MTB data to predict ABR phenotypes
 Authors:
 	Michael Chen (original version)
 	Anna G. Green
-	Chang-ho Yoon
+	Chang Ho Yoon
 """
 
 
