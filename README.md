@@ -35,5 +35,7 @@ regression_l2: code for running regression + L2 regularization baseline
 
 wdnn: code for running previous state of art wide and deep neural network (WDNN)
 
+input_data: input fasta and phenotype data for training, test and CRyPTIC datasets, as well as in silico mutagenized strains
+
 ```
 
