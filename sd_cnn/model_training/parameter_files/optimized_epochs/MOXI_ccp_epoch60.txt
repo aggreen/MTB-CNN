@@ -1,0 +1,31 @@
+## Parameter file for run_cnn.py
+
+# Run parameters
+filter_size: 12
+N_epochs: 60
+weight_of_sensitive_class: 1
+drug: MOXIFLOXACIN
+locus_list:
+- gyrBA
+
+## output paths specific to antibiotic
+output_path:  output_optimal_epochs_v2/MOXI_tf1_model/MOXI
+
+threshold_file:  output_optimal_epochs_v2/MOXI_ccp_150_XVal_20210219/MOXI_thresholds.csv
+
+pkl_file_sparse_train:   output_optimal_epochs_v2/MOXI_ccp_150_XVal_20210219/MOXI_X_sparse_train.npy.npz
+
+pkl_file_sparse_test:   output_optimal_epochs_v2/MOXI_ccp_150_XVal_20210219/MOXI_X_sparse_test.npy.npz
+
+alpha_file:   output_optimal_epochs_v2/MOXI_ccp_150_XVal_20210219/MOXI_alpha_sensitive_weight_1.0.csv
+
+saved_model_path:  output_optimal_epochs_v2/saved_models/MOXI_tf1_model
+
+## Invariant to antibiotic
+
+phenotype_file: ../../input_data/master_table_resistance.csv
+
+genotype_input_directory: ../../input_data/fasta_files
+
+genotype_df_file: multitask_geno_train_test.pkl
+pkl_file: multitask_geno_pheno_train_test.pkl
