@@ -19,7 +19,15 @@ Downstream data analysis was performed on a MacBook Pro laptop running macOS Cat
 
 ## Instructions for running
 
+#### Input sequences
 
+All sequences input to the model were aligned to the M. tuberculosis H37Rv reference genome, with fasta nucleotide sequences extracted for the positions listed in Table 3 of the published manuscript. The sequences for each locus are input as a multiple nucleotide sequence alignment - meaning that gaps are present in the input reference sequence if any of the input sequences has an insertion at that position. All provided input fasta sequence files are aligned accordingly.
+
+To input new sequences to the model, the new sequences need to be appended to the existing input fasta sequence files so that the frame of the alignment is unchanged. We recommend doing this with MAFFT v7.490, `mafft --add <new_fasta_alignment_file> --keeplength <previous_fasta_alignment_file> > <output_alignment>`
+
+#### Executing models
+
+All scripts in the model_training subdirectories are executed with `python <script.py> <parameter_file.txt>`, with parameter files in yaml format. Paths within the parameter file should be adjusted for your local environment. 
 
 ## List of subdirectories
 ```
