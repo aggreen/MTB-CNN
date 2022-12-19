@@ -14,7 +14,8 @@ use strict;
 
 my @tempFiles;
 
-my @fileListRaw =&ReadInFile('/n/data1/hms/dbmi/farhat/tb_cnn/files_20201207.txt');
+# reads list of paths to input vcf files (one file per line)
+my @fileListRaw =&ReadInFile('input_vcf_files.txt');
 my @fileList;
 
 #my $l=$#ARGV;
@@ -102,7 +103,7 @@ my @RvDNA;
 ######### get the H37Rv reference sequence for a region based whole sequence alignment i.e not a snp concatenation
 if ($option4 =~ m/REGION/i) {
        my @sequence;
-       @sequence = `/n/data1/hms/dbmi/farhat/bin/work-horse/bin/get_seq_coord.pl -coord ${regionstart}-${regionend} -nodefline /n/data1/hms/dbmi/farhat/bin/work-horse/bin/h37rv.fasta`; #regionstart here needs to be 1-based
+       @sequence = `get_seq_coord.pl -coord ${regionstart}-${regionend} -nodefline h37rv.fasta`; #regionstart here needs to be 1-based
        my $sequence;
 
        foreach my $line (@sequence) {
