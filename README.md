@@ -1,7 +1,7 @@
 # MTB-CNN
-CNN models for antibiotic resistance prediction in M. tuberculosis genomes. From Green &amp; Yoon et al 
+CNN models for antibiotic resistance prediction in M. tuberculosis genomes. From Green &amp; Yoon et al, Nat Comms 2022
 
-preprint: https://www.biorxiv.org/content/10.1101/2021.12.06.471431v1
+https://doi.org/10.1038/s41467-022-31236-0
 
 ## Installation
 
